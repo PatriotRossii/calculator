@@ -1,0 +1,34 @@
+num = @{ int ~ ("." ~ ASCII_DIGIT*)? ~ (^"e" ~ int)? }
+int = { ("+" | "-")? ~ ASCII_DIGIT+ }
+
+unary_op = {
+    abs | sqrt | sin | cos | tg | ctg
+}
+    abs = { "abs" }
+    sqrt = { "sqrt" }
+    sin = { "sin" }
+    cos = { "cos" }
+    tg = { "tg" }
+    ctg = { "ctg" }
+
+binary_op = {
+    add | sub | mul | div | pow
+}
+    add = { "add" }
+    sub = { "sub" }
+    mul = { "mul" }
+    div = { "div" }
+    pow = { "pow" }
+
+unary_expr = { unary_op ~ "(" ~ term ~ ")" }
+binary_expr = { binary_op ~ "(" ~ term ~ "," ~ term ~ ")" }
+literal_expr = { num }
+
+expr = _{
+    "(" ~ (unary_expr | binary_expr) ~ ")"
+}
+term = _{ expr | literal_expr }
+
+calculation = _{ SOI ~ expr ~ EOI }
+
+WHITESPACE = _{ " " | "\t" }
