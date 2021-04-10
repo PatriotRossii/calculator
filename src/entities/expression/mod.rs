@@ -82,7 +82,7 @@ impl Evaluate for LiteralExpression {
 impl Parse for LiteralExpression {
     fn parse(pair: Pair<Rule>) -> Self {
         Self {
-            value: Literal::parse(pair),
+            value: Literal::parse(pair.into_inner().next().unwrap()),
         }
     }
 }
@@ -106,11 +106,10 @@ impl Evaluate for Expression {
 
 impl Parse for Expression {
     fn parse(pair: Pair<Rule>) -> Self {
-        let inner = pair.into_inner().next().unwrap();
-        match inner.as_rule() {
-            Rule::literal_expr => Self::Literal(LiteralExpression::parse(inner)),
-            Rule::unary_expr => Self::Unary(UnaryExpression::parse(inner)),
-            Rule::binary_expr => Self::Binary(BinaryExpression::parse(inner)),
+        match pair.as_rule() {
+            Rule::literal_expr => Self::Literal(LiteralExpression::parse(pair)),
+            Rule::unary_expr => Self::Unary(UnaryExpression::parse(pair)),
+            Rule::binary_expr => Self::Binary(BinaryExpression::parse(pair)),
             _ => unreachable!(),
         }
     }

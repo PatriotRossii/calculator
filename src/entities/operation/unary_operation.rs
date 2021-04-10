@@ -34,7 +34,7 @@ impl UnaryOperation {
 impl Parse for UnaryOperation {
     fn parse(pair: Pair<Rule>) -> Self {
         match pair.as_rule() {
-            Rule::binary_op => {
+            Rule::unary_op => {
                 let inner = pair.into_inner().next().unwrap();
                 match inner.as_rule() {
                     Rule::abs => Self::Abs,
