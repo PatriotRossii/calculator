@@ -55,4 +55,16 @@ mod tests {
         // Test surrounding with parentheses. 5 - (2^2)
         GrammarParser::parse(Rule::binary_expr, "sub((5), (pow(2, 2)))").unwrap();
     }
+
+    #[test]
+    pub fn unary_expression() {
+        // sin 3.14
+        GrammarParser::parse(Rule::unary_expr, "sin(3.14)").unwrap();
+
+        // |-10|
+        GrammarParser::parse(Rule::unary_expr, "abs(-10)").unwrap();
+
+        // Square root from 100
+        GrammarParser::parse(Rule::unary_expr, "sqrt(100)").unwrap();
+    }
 }
