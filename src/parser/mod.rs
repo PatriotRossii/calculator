@@ -10,14 +10,12 @@ pub trait Parse {
 
 #[cfg(test)]
 mod tests {
-    use pest::{Parser};
     use crate::{GrammarParser, Rule};
+    use pest::Parser;
 
     #[test]
     pub fn binary_operation() {
-        let operations = vec![
-            "add", "sub", "mul", "div", "pow"
-        ];
+        let operations = vec!["add", "sub", "mul", "div", "pow"];
         for operation in operations {
             GrammarParser::parse(Rule::binary_op, operation).unwrap();
         }
@@ -25,9 +23,7 @@ mod tests {
 
     #[test]
     pub fn unary_operation() {
-        let operations = vec![
-            "abs", "sqrt", "sin", "cos", "tg", "ctg"
-        ];
+        let operations = vec!["abs", "sqrt", "sin", "cos", "tg", "ctg"];
         for operation in operations {
             GrammarParser::parse(Rule::unary_op, operation).unwrap();
         }
@@ -35,10 +31,7 @@ mod tests {
 
     #[test]
     pub fn num() {
-        let literals = vec![
-            "65279", "3.1415927", "1e10", "1e-10",
-            "3.1415927e10"
-        ];
+        let literals = vec!["65279", "3.1415927", "1e10", "1e-10", "3.1415927e10"];
         for literal in literals {
             GrammarParser::parse(Rule::literal_expr, literal).unwrap();
         }

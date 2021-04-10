@@ -9,17 +9,26 @@ use super::{
     operation::{binary_operation::BinaryOperation, unary_operation::UnaryOperation},
 };
 
-pub trait Evaluate {
-    fn evaluate(&self) -> Literal;
+pub trait Evaluate<T>
+where
+    T: Literal,
+{
+    fn evaluate(&self) -> T;
 }
 
 #[derive(Clone, Debug)]
-pub struct UnaryExpression {
-    lhs: Rc<Expression>,
+pub struct UnaryExpression<T>
+where
+    T: Literal,
+{
+    lhs: Rc<Expression<T>>,
     operation: UnaryOperation,
 }
 
-impl Parse for UnaryExpression {
+impl<T> Parse for UnaryExpression<T>
+where
+    T: Literal,
+{
     fn parse(pair: Pair<Rule>) -> Self {
         let mut inner = pair.into_inner();
 
@@ -33,26 +42,38 @@ impl Parse for UnaryExpression {
     }
 }
 
-impl Evaluate for UnaryExpression {
-    fn evaluate(&self) -> Literal {
+impl<T> Evaluate<T> for UnaryExpression<T>
+where
+    T: Literal,
+{
+    fn evaluate(&self) -> T {
         self.operation.apply(self.lhs.deref())
     }
 }
 
 #[derive(Clone, Debug)]
-pub struct BinaryExpression {
-    lhs: Rc<Expression>,
-    rhs: Rc<Expression>,
+pub struct BinaryExpression<T>
+where
+    T: Literal,
+{
+    lhs: Rc<Expression<T>>,
+    rhs: Rc<Expression<T>>,
     operation: BinaryOperation,
 }
 
-impl Evaluate for BinaryExpression {
-    fn evaluate(&self) -> Literal {
+impl<T> Evaluate<T> for BinaryExpression<T>
+where
+    T: Literal,
+{
+    fn evaluate(&self) -> T {
         self.operation.apply(self.lhs.deref(), self.rhs.deref())
     }
 }
 
-impl Parse for BinaryExpression {
+impl<T> Parse for BinaryExpression<T>
+where
+    T: Literal,
+{
     fn parse(pair: Pair<Rule>) -> Self {
         let mut inner = pair.into_inner();
 
@@ -69,33 +90,48 @@ impl Parse for BinaryExpression {
 }
 
 #[derive(Clone, Debug)]
-pub struct LiteralExpression {
-    value: Literal,
+pub struct LiteralExpression<T>
+where
+    T: Literal,
+{
+    value: T,
 }
 
-impl Evaluate for LiteralExpression {
-    fn evaluate(&self) -> Literal {
+impl<T> Evaluate<T> for LiteralExpression<T>
+where
+    T: Literal,
+{
+    fn evaluate(&self) -> T {
         self.value
     }
 }
 
-impl Parse for LiteralExpression {
+impl<T> Parse for LiteralExpression<T>
+where
+    T: Literal,
+{
     fn parse(pair: Pair<Rule>) -> Self {
         Self {
-            value: Literal::parse(pair.into_inner().next().unwrap()),
+            value: Literal::parse(pair.into_inner().next().unwrap().as_str()),
         }
     }
 }
 
 #[derive(Clone, Debug)]
-pub enum Expression {
-    Literal(LiteralExpression),
-    Unary(UnaryExpression),
-    Binary(BinaryExpression),
+pub enum Expression<T>
+where
+    T: Literal,
+{
+    Literal(LiteralExpression<T>),
+    Unary(UnaryExpression<T>),
+    Binary(BinaryExpression<T>),
 }
 
-impl Evaluate for Expression {
-    fn evaluate(&self) -> Literal {
+impl<T> Evaluate<T> for Expression<T>
+where
+    T: Literal,
+{
+    fn evaluate(&self) -> T {
         match self {
             Expression::Literal(expr) => expr.evaluate(),
             Expression::Unary(expr) => expr.evaluate(),
@@ -104,7 +140,10 @@ impl Evaluate for Expression {
     }
 }
 
-impl Parse for Expression {
+impl<T> Parse for Expression<T>
+where
+    T: Literal,
+{
     fn parse(pair: Pair<Rule>) -> Self {
         match pair.as_rule() {
             Rule::literal_expr => Self::Literal(LiteralExpression::parse(pair)),

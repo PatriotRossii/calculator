@@ -19,14 +19,17 @@ pub enum UnaryOperation {
 }
 
 impl UnaryOperation {
-    pub fn apply(&self, lhs: &Expression) -> Literal {
+    pub fn apply<T>(&self, lhs: &Expression<T>) -> T
+    where
+        T: Literal,
+    {
         match *self {
             UnaryOperation::Abs => lhs.evaluate().abs(),
             UnaryOperation::Sqrt => lhs.evaluate().sqrt(),
             UnaryOperation::Sin => lhs.evaluate().sin(),
             UnaryOperation::Cos => lhs.evaluate().cos(),
-            UnaryOperation::Tg => lhs.evaluate().tan(),
-            UnaryOperation::Ctg => lhs.evaluate().tan().powi(-1),
+            UnaryOperation::Tg => lhs.evaluate().tg(),
+            UnaryOperation::Ctg => lhs.evaluate().ctg(),
         }
     }
 }

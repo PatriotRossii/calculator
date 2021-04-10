@@ -17,12 +17,15 @@ pub enum BinaryOperation {
 }
 
 impl BinaryOperation {
-    pub fn apply(&self, lhs: &Expression, rhs: &Expression) -> Literal {
+    pub fn apply<T>(&self, lhs: &Expression<T>, rhs: &Expression<T>) -> T
+    where
+        T: Literal,
+    {
         match *self {
-            BinaryOperation::Add => lhs.evaluate() + rhs.evaluate(),
-            BinaryOperation::Sub => lhs.evaluate() - rhs.evaluate(),
-            BinaryOperation::Div => lhs.evaluate() / rhs.evaluate(),
-            BinaryOperation::Mul => lhs.evaluate() * rhs.evaluate(),
+            BinaryOperation::Add => lhs.evaluate().add(&rhs.evaluate()),
+            BinaryOperation::Sub => lhs.evaluate().sub(&rhs.evaluate()),
+            BinaryOperation::Div => lhs.evaluate().div(&rhs.evaluate()),
+            BinaryOperation::Mul => lhs.evaluate().mul(&rhs.evaluate()),
         }
     }
 }
