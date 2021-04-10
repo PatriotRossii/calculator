@@ -50,6 +50,9 @@ mod tests {
         GrammarParser::parse(Rule::binary_expr, "add(1, 2)").unwrap();
 
         // 5^(8^3)
-        GrammarParser::parse(Rule::binary_expr, "pow(5, (pow(8, 3)))").unwrap();
+        GrammarParser::parse(Rule::binary_expr, "pow(5, pow(8, 3))").unwrap();
+
+        // Test surrounding with parentheses. 5 - (2^2)
+        GrammarParser::parse(Rule::binary_expr, "sub((5), (pow(2, 2)))").unwrap();
     }
 }

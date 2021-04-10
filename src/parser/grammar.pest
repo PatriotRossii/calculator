@@ -25,9 +25,12 @@ binary_expr = { binary_op ~ "(" ~ term ~ "," ~ term ~ ")" }
 literal_expr = { num }
 
 expr = _{
-    "(" ~ (unary_expr | binary_expr) ~ ")"
+    unary_expr | binary_expr
 }
-term = _{ expr | literal_expr }
+term = _{
+    ("(" ~ (expr | literal_expr) ~ ")") |
+    (expr | literal_expr)
+}
 
 calculation = _{ SOI ~ expr ~ EOI }
 
