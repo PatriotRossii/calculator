@@ -28,7 +28,7 @@ expr = _{
     unary_expr | binary_expr
 }
 term = _{
-    ("(" ~ (expr | literal_expr) ~ ")") |
+    ("(" ~ term ~ ")") |
     (expr | literal_expr)
 }
 

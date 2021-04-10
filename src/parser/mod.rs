@@ -67,4 +67,13 @@ mod tests {
         // Square root from 100
         GrammarParser::parse(Rule::unary_expr, "sqrt(100)").unwrap();
     }
+
+    #[test]
+    pub fn term() {
+        GrammarParser::parse(Rule::term, "5").unwrap();
+        GrammarParser::parse(Rule::term, "abs(5)").unwrap();
+
+        GrammarParser::parse(Rule::term, "(5)").unwrap();
+        GrammarParser::parse(Rule::term, "(((add(1,2))))").unwrap();
+    }
 }
