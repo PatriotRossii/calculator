@@ -81,7 +81,7 @@ impl Literal for f64 {
 
 impl Literal for Decimal {
     fn parse(repr: &str) -> Self {
-        if let None = repr.find("e") {
+        if repr.find('e').is_none() {
             Self::from_str(repr).unwrap()
         } else {
             Self::from_scientific(repr).unwrap()
@@ -132,11 +132,7 @@ impl Literal for Decimal {
         if self.is_sign_positive() {
             (rhs * self.ln()).exp()
         } else {
-            self.to_f64()
-                .unwrap()
-                .powf(rhs.to_f64().unwrap())
-                .try_into()
-                .unwrap()
+            panic!("Calculate real power of negative number by yourself")
         }
     }
 }
