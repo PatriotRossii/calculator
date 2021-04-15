@@ -6,6 +6,7 @@ use crate::{
         literal::Literal,
     },
     parser::{Parse, Rule},
+    AngleRepresentation, CalculatorState,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -19,17 +20,29 @@ pub enum UnaryOperation {
 }
 
 impl UnaryOperation {
-    pub fn apply<T>(&self, lhs: &Expression<T>) -> T
+    pub fn apply<T>(&self, lhs: &Expression<T>, state: &CalculatorState) -> T
     where
         T: Literal,
     {
-        match *self {
-            UnaryOperation::Abs => lhs.evaluate().abs(),
-            UnaryOperation::Sqrt => lhs.evaluate().sqrt(),
-            UnaryOperation::Sin => lhs.evaluate().sin(),
-            UnaryOperation::Cos => lhs.evaluate().cos(),
-            UnaryOperation::Tg => lhs.evaluate().tg(),
-            UnaryOperation::Ctg => lhs.evaluate().ctg(),
+        let mut operand = lhs.evaluate(state);
+
+        if let AngleRepresentation::Degree = state.angle_repr {
+            match self {
+                UnaryOperation::Sin
+                | UnaryOperation::Cos
+                | UnaryOperation::Tg
+                | UnaryOperation::Ctg => operand = operand.to_radians(),
+                _ => {}
+            }
+        }
+
+        match self {
+            UnaryOperation::Abs => operand.abs(),
+            UnaryOperation::Sqrt => operand.sqrt(),
+            UnaryOperation::Sin => operand.sin(),
+            UnaryOperation::Cos => operand.cos(),
+            UnaryOperation::Tg => operand.tg(),
+            UnaryOperation::Ctg => operand.ctg(),
         }
     }
 }

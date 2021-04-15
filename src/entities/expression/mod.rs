@@ -2,7 +2,10 @@ use std::{ops::Deref, rc::Rc};
 
 use pest::iterators::Pair;
 
-use crate::parser::{Parse, Rule};
+use crate::{
+    parser::{Parse, Rule},
+    CalculatorState,
+};
 
 use super::{
     literal::Literal,
@@ -13,7 +16,7 @@ pub trait Evaluate<T>
 where
     T: Literal,
 {
-    fn evaluate(&self) -> T;
+    fn evaluate(&self, state: &CalculatorState) -> T;
 }
 
 #[derive(Clone, Debug)]
@@ -46,8 +49,8 @@ impl<T> Evaluate<T> for UnaryExpression<T>
 where
     T: Literal,
 {
-    fn evaluate(&self) -> T {
-        self.operation.apply(self.lhs.deref())
+    fn evaluate(&self, state: &CalculatorState) -> T {
+        self.operation.apply(self.lhs.deref(), state)
     }
 }
 
@@ -65,8 +68,9 @@ impl<T> Evaluate<T> for BinaryExpression<T>
 where
     T: Literal,
 {
-    fn evaluate(&self) -> T {
-        self.operation.apply(self.lhs.deref(), self.rhs.deref())
+    fn evaluate(&self, state: &CalculatorState) -> T {
+        self.operation
+            .apply(self.lhs.deref(), self.rhs.deref(), state)
     }
 }
 
@@ -101,7 +105,7 @@ impl<T> Evaluate<T> for LiteralExpression<T>
 where
     T: Literal,
 {
-    fn evaluate(&self) -> T {
+    fn evaluate(&self, _state: &CalculatorState) -> T {
         self.value
     }
 }
@@ -131,11 +135,11 @@ impl<T> Evaluate<T> for Expression<T>
 where
     T: Literal,
 {
-    fn evaluate(&self) -> T {
+    fn evaluate(&self, state: &CalculatorState) -> T {
         match self {
-            Expression::Literal(expr) => expr.evaluate(),
-            Expression::Unary(expr) => expr.evaluate(),
-            Expression::Binary(expr) => expr.evaluate(),
+            Expression::Literal(expr) => expr.evaluate(state),
+            Expression::Unary(expr) => expr.evaluate(state),
+            Expression::Binary(expr) => expr.evaluate(state),
         }
     }
 }

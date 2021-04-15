@@ -1,5 +1,5 @@
 use rust_decimal::{prelude::ToPrimitive, Decimal};
-use std::{convert::TryInto, str::FromStr};
+use std::{convert::TryInto, lazy::OnceCell, str::FromStr};
 
 /*pub type Literal = Number;
 
@@ -11,6 +11,8 @@ impl Parse for Literal {
         }
     }
 }*/
+
+const DEG_RAD: OnceCell<Decimal> = OnceCell::new();
 
 pub trait Literal: Copy {
     fn parse(repr: &str) -> Self;
@@ -27,6 +29,8 @@ pub trait Literal: Copy {
     fn mul(&self, rhs: &Self) -> Self;
     fn div(&self, rhs: &Self) -> Self;
     fn pow(&self, rhs: &Self) -> Self;
+
+    fn to_radians(&self) -> Self;
 }
 
 impl Literal for f64 {
@@ -76,6 +80,10 @@ impl Literal for f64 {
 
     fn pow(&self, rhs: &Self) -> Self {
         self.powf(*rhs)
+    }
+
+    fn to_radians(&self) -> Self {
+        f64::to_radians(*self)
     }
 }
 
@@ -134,5 +142,9 @@ impl Literal for Decimal {
         } else {
             panic!("Calculate real power of negative number by yourself")
         }
+    }
+
+    fn to_radians(&self) -> Self {
+        self * DEG_RAD.get_or_init(|| (std::f64::consts::PI / 180_f64).try_into().unwrap())
     }
 }

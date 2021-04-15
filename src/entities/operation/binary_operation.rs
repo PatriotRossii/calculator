@@ -6,6 +6,7 @@ use crate::{
         literal::Literal,
     },
     parser::{Parse, Rule},
+    CalculatorState,
 };
 
 #[derive(Clone, Copy, Debug)]
@@ -17,15 +18,18 @@ pub enum BinaryOperation {
 }
 
 impl BinaryOperation {
-    pub fn apply<T>(&self, lhs: &Expression<T>, rhs: &Expression<T>) -> T
+    pub fn apply<T>(&self, lhs: &Expression<T>, rhs: &Expression<T>, state: &CalculatorState) -> T
     where
         T: Literal,
     {
+        let lhs = lhs.evaluate(state);
+        let rhs = rhs.evaluate(state);
+
         match *self {
-            BinaryOperation::Add => lhs.evaluate().add(&rhs.evaluate()),
-            BinaryOperation::Sub => lhs.evaluate().sub(&rhs.evaluate()),
-            BinaryOperation::Div => lhs.evaluate().div(&rhs.evaluate()),
-            BinaryOperation::Mul => lhs.evaluate().mul(&rhs.evaluate()),
+            BinaryOperation::Add => lhs.add(&rhs),
+            BinaryOperation::Sub => lhs.sub(&rhs),
+            BinaryOperation::Div => lhs.div(&rhs),
+            BinaryOperation::Mul => lhs.mul(&rhs),
         }
     }
 }
